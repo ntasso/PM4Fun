@@ -1,4 +1,4 @@
-def extract_data(g_o,phases,x,y):
+def extract_data_PM4Silt(g_o,phases,x,y):
     data = {'q':[],'p':[],
             'sx':[],'sy':[],'sz':[],'sxy':[],'ea':[],'eps_v':[],'gamxy':[],'gams':[],
             'eps_1':[],'eps_2':[],'eps_3':[],'eps_xx':[],'eps_yy':[],'phase':[],'s1':[],'s2':[],'s3':[],
@@ -13,7 +13,7 @@ def extract_data(g_o,phases,x,y):
         for step in phase.Steps:
             try:
                 data['suratio'].append(g_o.getsingleresult(step,g_o.ResultTypes.Soil.StateParameters[0],(x,y)))
-                data['su'].append(g_o.getsingleresult(step,g_o.ResultTypes.Soil.StateParameters[mat_idx],(x,y)))
+                data['su'].append(g_o.getsingleresult(step,g_o.ResultTypes.Soil.StateParameters[1],(x,y)))
                 data['rumax'].append(g_o.getsingleresult(step,g_o.ResultTypes.Soil.StateParameters[2],(x,y)))
                 data['pmin'].append(g_o.getsingleresult(step,g_o.ResultTypes.Soil.StateParameters[3],(x,y)))
                 data['zmax'].append(g_o.getsingleresult(step,g_o.ResultTypes.Soil.StateParameters[4],(x,y)))

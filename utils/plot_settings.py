@@ -1,4 +1,4 @@
-def set_limit(axismin, axismax, series):
+def set_limit(axismin, axismax, data,vars):
     """
     Determines the axis limits for a plot based on input values or data series.
 
@@ -15,17 +15,23 @@ def set_limit(axismin, axismax, series):
         The calculated or provided axis limits.
     """
 
-    # Calculate minimum limit if 'auto' is specified
-    if axismin == 'auto':
-        max_value = series.max()
-        min_value = series.min()
-        axismin = min_value - (max_value - min_value) * 0.1
+    axismin_val = -10**6
+    axismax_val = 10**6
+    for var in vars:
+        # Calculate minimum limit if 'auto' is specified
+        series = data[var]
+        if axismin == 'auto':
+            max_value = series.max()
+            min_value = series.min()
+            axismin = min_value - (max_value - min_value) * 0.1
 
-    # Calculate maximum limit if 'auto' is specified
-    if axismax == 'auto':
-        max_value = series.max()
-        min_value = series.min()
-        axismax = max_value + (max_value - min_value) * 0.1
+        # Calculate maximum limit if 'auto' is specified
+        if axismax == 'auto':
+            max_value = series.max()
+            min_value = series.min()
+            axismax = max_value + (max_value - min_value) * 0.1
 
+        axismin_val = min(axismin_val,axismin)
+        axismax_val = max(axismax_val,axismax)
     # Return the determined axis limits
-    return axismin, axismax
+    return axismin_val, axismax_val

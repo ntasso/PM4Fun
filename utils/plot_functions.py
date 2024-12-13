@@ -39,8 +39,8 @@ def plot_sxy_vs_gxy(ax, data, stop_idx, xmin='auto', xmax='auto', ymin='auto', y
     ax.grid(color='gray', alpha=0.2)
 
     # Calculate axis limits
-    xmin, xmax = set_limit(xmin, xmax, data['gamxy'])
-    ymin, ymax = set_limit(ymin, ymax, data['sxy'])
+    xmin, xmax = set_limit(xmin, xmax, data,['gamxy'])
+    ymin, ymax = set_limit(ymin, ymax, data,['sxy'])
 
     # Apply calculated or provided limits to the plot
     ax.set_ylim(ymin, ymax)
@@ -89,8 +89,8 @@ def plot_sxy_vs_sy(ax, data, stop_idx, xmin='auto', xmax='auto', ymin='auto', ym
     ax.grid(color='gray', alpha=0.2)
 
     # Calculate axis limits using the helper function set_limit
-    xmin, xmax = set_limit(xmin, xmax, data['sy'])
-    ymin, ymax = set_limit(ymin, ymax, data['sxy'])
+    xmin, xmax = set_limit(xmin, xmax, data,['sy'])
+    ymin, ymax = set_limit(ymin, ymax, data,['sxy'])
 
     # Apply axis limits
     ax.set_xlim(xmin, xmax)
@@ -101,3 +101,59 @@ def plot_sxy_vs_sy(ax, data, stop_idx, xmin='auto', xmax='auto', ymin='auto', ym
 
     # Highlight the last point in the plot
     ax.scatter(data['sy'].values[stop_idx - 1], data['sxy'].values[stop_idx - 1], color='k')
+
+
+def plot_alpha_vs_N(ax, data, stop_idx, xmin='auto', xmax='auto', ymin='auto', ymax='auto'):
+    """
+    Plots shear stress (τ_xy) versus vertical effective stress (σ'_y) on the provided Matplotlib Axes.
+
+    Parameters:
+    - ax: Matplotlib Axes
+        The Axes object where the plot will be drawn.
+    - data: pandas.DataFrame
+        A DataFrame containing the data to be plotted. Must include the following columns:
+        'sy' (vertical effective stress, σ'_y) and 'sxy' (shear stress, τ_xy).
+    - stop_idx: int
+        The index in the data up to which the plot should be drawn.
+    - xmin: float or 'auto', optional
+        Minimum x-axis limit. If 'auto', it is calculated based on the data in the 'sy' column.
+    - xmax: float or 'auto', optional
+        Maximum x-axis limit. If 'auto', it is calculated based on the data in the 'sy' column.
+    - ymin: float or 'auto', optional
+        Minimum y-axis limit. If 'auto', it is calculated based on the data in the 'sxy' column.
+    - ymax: float or 'auto', optional
+        Maximum y-axis limit. If 'auto', it is calculated based on the data in the 'sxy' column.
+
+    Returns:
+    - None
+        The function modifies the provided Axes object in place.
+    """
+
+    # Set axis labels
+    ax.set_xlabel('Number of uniform cycles, $N$ [-]')
+    ax.set_ylabel('Back stress ratio, $\\alpha_{ii}$ [-]')
+
+    # Add a horizontal line at τ_xy = 0 for reference
+    ax.axhline(0, color='k', linestyle='dotted')
+
+    # Add grid lines for better visualization
+    ax.grid(color='gray', alpha=0.2)
+
+    # Calculate axis limits using the helper function set_limit
+    xmin, xmax = set_limit(xmin, xmax, data,['N'])
+    ymin, ymax = set_limit(ymin, ymax, data,['alpha_xx','alpha_xy','alpha_yy'])
+
+    # Apply axis limits
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+
+    colors = {'alpha_xx':'b','alpha_yy':'r','alpha_xy':'forestgreen'}
+
+    for var in colors.keys():
+        # Plot the data from the start to the stop index
+        ax.plot(data['N'].values[:stop_idx], data[var].values[:stop_idx], color=colors[var])
+
+        # Highlight the last point in the plot
+        ax.scatter(data['N'].values[stop_idx - 1], data[var].values[stop_idx - 1], color=colors[var])
+
+
