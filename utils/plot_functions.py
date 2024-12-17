@@ -1,4 +1,4 @@
-from .plot_settings import set_limit
+from .plot_settings import *
 import numpy as np
 
 def plot_sxy_vs_gxy(ax, data, stop_idx, xmin='auto', xmax='auto', ymin='auto', ymax='auto'):
@@ -182,3 +182,75 @@ def plot_alpha_vs_N(ax, data, stop_idx, xmin='auto', xmax='auto', ymin='auto', y
     ax.legend(loc='upper left', ncol=3)
 
     
+
+
+def plot_q_vs_p(ax, data, params, stop_idx, xmin='auto', xmax='auto', ymin='auto', ymax='auto'):
+    """
+    Plots back stress ratio (\u03b1) versus the number of uniform cycles (N) on the provided Matplotlib Axes.
+
+    Parameters:
+    - ax: Matplotlib Axes
+        The Axes object where the plot will be drawn.
+    - data: pandas.DataFrame
+        A DataFrame containing the data to be plotted. Must include the following columns:
+        'N', 'alphaxx', 'alphayy', and 'alphaxy'.
+    - stop_idx: int
+        The index in the data up to which the plot should be drawn.
+    - xmin: float or 'auto', optional
+        Minimum x-axis limit. If 'auto', it is calculated based on the data in the 'N' column.
+    - xmax: float or 'auto', optional
+        Maximum x-axis limit. If 'auto', it is calculated based on the data in the 'N' column.
+    - ymin: float or 'auto', optional
+        Minimum y-axis limit. If 'auto', it is calculated based on the data in the columns 'alphaxx', 'alphayy', and 'alphaxy'.
+    - ymax: float or 'auto', optional
+        Maximum y-axis limit. If 'auto', it is calculated based on the data in the columns 'alphaxx', 'alphayy', and 'alphaxy'.
+
+    Returns:
+    - None
+        The function modifies the provided Axes object in place.
+    """
+
+    # Set axis labels
+    ax.set_xlabel('Mid stress, $p^{*} = \dfrac{\sigma_{x}+\sigma_{y}}{2}$ [kPa]')
+    ax.set_ylabel('Deviatoric stress, $q^{*} = \\sqrt{2} \\cdot |\\sigma-pI|$ [kPa]')
+    
+
+    # Add grid lines for better visualization
+    ax.grid(color='gray', alpha=0.2)
+
+    # Helper function to calculate axis limits
+    xmin, xmax = set_limit(xmin, xmax, data, ['p_ast'])  # Set x-axis limits based on the 'N' column
+    ymin, ymax = set_limit(ymin, ymax, data, ['q_ast'])  # Set y-axis limits based on the back stress ratio columns
+
+    xmin = 0
+    ymin = 0
+
+    # Apply the calculated axis limits
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+
+
+    pbs = np.linspace(0,xmax,10000)
+
+    M = calculate_M(params)
+    ax.plot([0,xmax],[0,xmax*M],color='r',label='$M$')
+
+    Mb = calculate_Mb(pbs,params,data,stop_idx)
+    ax.plot(pbs,pbs*Mb,color='b',label='$M_{b}$')
+
+    Md = calculate_Md(pbs,params,data,stop_idx)
+    ax.plot(pbs,pbs*Md,color='forestgreen',label='$M_{d}$')
+
+
+    # TO IMPROVE
+    m = 0.01
+    ax.plot([0,10000],[0,10000*data['q_ast'].values[stop_idx-1]/data['p_ast'].values[stop_idx-1]],color='gray')
+    ax.plot([0,10000],[0,10000*(data['q_ast'].values[stop_idx-1]/data['p_ast'].values[stop_idx-1]-2*m)],color='gray',
+             label='Yield surface')
+    
+
+
+    ax.plot(data['p_ast'].values[:stop_idx],data['q_ast'].values[:stop_idx],color='k')
+    ax.scatter(data['p_ast'].values[stop_idx-1],data['q_ast'].values[stop_idx-1],color='k')
+
+    ax.legend(loc='upper left')

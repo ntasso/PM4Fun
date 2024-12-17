@@ -1,3 +1,5 @@
+import numpy as np
+
 def set_limit(axismin, axismax, data,vars):
     """
     Determines the axis limits for a plot based on input values or data series.
@@ -39,3 +41,33 @@ def set_limit(axismin, axismax, data,vars):
         axismax_val = max(axismax_val,axismax_i)
     # Return the determined axis limits
     return axismin_val, axismax_val
+
+def calculate_M(params):
+    return 2*np.sin(np.radians(params['phicv'].values[0]))
+
+def calculate_Mb(pbs, params,data,nidx):
+    Mb = []
+    for pb in pbs:
+        pcs = data['pcs'].values[nidx-1]
+        if pb>=pcs:
+            xigamma = -np.log(data['pcs'].values[nidx-1])+np.log(pb)
+            Mb.append(data['M'].values[nidx-1] * np.exp(-1*params['nbwet'].values[0]*xigamma))
+        else:
+            CMB = 1 / ((2*np.sin(np.radians(60))/data['M'].values[nidx-1])**(1/params['nbdry'].values[0])-1)
+            Mb.append(data['M'].values[nidx-1]*((1+CMB)/(pb/data['pcs'].values[nidx-1]+CMB))**params['nbdry'].values[0])
+    return Mb
+
+def calculate_Md(pbs, params, data, nidx):
+    Md = []
+    for pb in pbs:
+    
+        xigamma = -np.log(data['pcs'].values[nidx-1])+np.log(pb)
+        Md.append(data['M'].values[nidx-1] * np.exp(1*params['nd'].values[0]*xigamma))
+    return Md
+
+def calculate_phi(M):
+    return np.degrees(np.arcsin(3*M/(6+M)))
+
+def calculate_tanphi(M):
+    return np.tan(np.arcsin(3*M/(6+M)))
+
