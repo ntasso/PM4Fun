@@ -1,6 +1,6 @@
 import numpy as np
 
-def set_limit(axismin, axismax, data,vars):
+def set_limit(axismin, axismax, data,vars,offset=0.1):
     """
     Determines the axis limits for a plot based on input values or data series.
 
@@ -25,7 +25,7 @@ def set_limit(axismin, axismax, data,vars):
         if axismin == 'auto':
             max_value = series.max()
             min_value = series.min()
-            axismin_i = min_value - (max_value - min_value) * 0.1
+            axismin_i = min_value - (max_value - min_value) * offset
         else:
             axismin_i = axismin
 
@@ -33,7 +33,7 @@ def set_limit(axismin, axismax, data,vars):
         if axismax == 'auto':
             max_value = series.max()
             min_value = series.min()
-            axismax_i = max_value + (max_value - min_value) * 0.1
+            axismax_i = max_value + (max_value - min_value) * offset
         else:
             axismax_i = axismax
 
@@ -71,3 +71,11 @@ def calculate_phi(M):
 def calculate_tanphi(M):
     return np.tan(np.arcsin(3*M/(6+M)))
 
+def circle(radius,xcenter,ycenter,n=1000):
+    x = np.linspace(-radius,radius,n)
+    y = np.sqrt(radius**2-x**2)
+
+    x = np.append(x+xcenter,x[::-1]+xcenter)
+    y = np.append(y+ycenter,y*-1+ycenter)
+
+    return x,y
