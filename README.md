@@ -1,2 +1,1 @@
-# PM4Fun
-![logo](assets/logo2.svg)
+![logo](assets/logo3.svg)
